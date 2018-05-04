@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Calculating With React</title>
+  </head>
+  <body>
+
+  <div id="content">
+   <h1>Re-Calc:</h1>
+   <p>
+    Hang on to your hats everyone, it's the React Calculator!
+   </p>
+  </div>
+  <div id="container">
+  </div>
+
+  <link rel="stylesheet" href="recalc.css">
+
+  <script src="build/react.js"></script>
+  <script src="build/react-dom.js"></script>
+  <script src="build/browser.js"></script>
+
+  <script type="text/babel">
+
+   var CalcDisplay = React.createClass({
+    render:function(){
+     return(
+      <div className="calcDisplay">{this.props.number}</div>
+     );
+    }
+   });
+
+   var CalcButton = React.createClass({
+    handleClick: function() {
+     this.props.ifClicked(this.props.value);
+    },
+
+    render:function(){
+     return(
+      <div className="calcButton"
+         onClick={this.handleClick}>
+          {this.props.value}
+      </div>
+     );
+    }
+   });
+
+   var Calculator = React.createClass({
+
+    getInitialState: function(){
+     return {number1: '0', number2: '0', initial: true, calcFn: '' };
+    },
+
+    updateNumber: function(value){
+     var newState;
+
+     if( this.state.initial ){
+      newState = value;
+      this.setState({ initial: false });
+     } else {
+      newState = this.state.number1 + value;
+     }
+
+     this.setState({ number1: newState });
+    },
+
+    prepCalc: function(calcFn){
+     this.setState({ number2: this.state.number1 });
+     this.setState({ initial: true });
+     this.setState({ calcFn: calcFn });
+    },
+
+    doDiv: function(){
+     this.setState({ number1: this.state.number2 / this.state.number1 });
+    },
+
+    doMul: function(){
+     this.setState({ number1: this.state.number2 * this.state.number1 });
+    },
+
+    doSub: function(){
+     this.setState({ number1: this.state.number2 - this.state.number1 });
+    },
+
+    doAdd: function(){
+     this.setState({ number1: parseInt(this.state.number2) 
+                   + parseInt(this.state.number1) });
+    },
+
+    calc: function(){
+     if( this.state.calcFn != '' ){
+      this.state.calcFn();
+      this.setState({ initial: true });
+      this.setState({ calcFn: '' });
+     }
+    },
+
+    clearCalc: function(){
+     this.setState({ initial: true });
+     this.setState({ calcFn: '' });
+     this.setState({ number1: '0' });
+     this.setState({ number2: '0' });
+    },
+
+    render:function(){
+     return (
+      <div className="calculator" >
+       <CalcDisplay number={this.state.number1} />
+       <div>
+        <CalcButton value="1" ifClicked={this.updateNumber} />
+        <CalcButton value="2" ifClicked={this.updateNumber} />
+        <CalcButton value="3" ifClicked={this.updateNumber} />
+        <CalcButton value="/" ifClicked={this.prepCalc.bind(this, this.doDiv)} />
+       </div>
+       <div>
+        <CalcButton value="4" ifClicked={this.updateNumber} />
+        <CalcButton value="5" ifClicked={this.updateNumber} />
+        <CalcButton value="6" ifClicked={this.updateNumber} />
+        <CalcButton value="*" ifClicked={this.prepCalc.bind(this, this.doMul)} />
+       </div>
+       <div>
+        <CalcButton value="7" ifClicked={this.updateNumber} />
+        <CalcButton value="8" ifClicked={this.updateNumber} />
+        <CalcButton value="9" ifClicked={this.updateNumber} />
+        <CalcButton value="-" ifClicked={this.prepCalc.bind(this, this.doSub)} />
+       </div>
+       <div>
+        <CalcButton value="C" ifClicked={this.clearCalc} />
+        <CalcButton value="0" ifClicked={this.updateNumber} />
+        <CalcButton value="=" ifClicked={this.calc} />
+        <CalcButton value="+" ifClicked={this.prepCalc.bind(this, this.doAdd)} />
+       </div>
+      </div>
+     );
+    }
+   });
+
+   ReactDOM.render(
+    <Calculator />,
+    document.getElementById('container')
+   );
+    </script>
+
+  </body>
+</html>
